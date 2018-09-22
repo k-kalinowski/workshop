@@ -3,6 +3,8 @@ package com.github.workshop.service.dto;
 import java.time.Instant;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -18,11 +20,11 @@ public class RepairDTO implements Serializable {
     @NotNull
     private Instant date;
 
+    private Set<PartDTO> parts = new HashSet<>();
+
+    private Set<TaskDTO> tasks = new HashSet<>();
+
     private Long historyId;
-
-    private Long taskId;
-
-    private Long partId;
 
     public Long getId() {
         return id;
@@ -48,28 +50,28 @@ public class RepairDTO implements Serializable {
         this.date = date;
     }
 
+    public Set<PartDTO> getParts() {
+        return parts;
+    }
+
+    public void setParts(Set<PartDTO> parts) {
+        this.parts = parts;
+    }
+
+    public Set<TaskDTO> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<TaskDTO> tasks) {
+        this.tasks = tasks;
+    }
+
     public Long getHistoryId() {
         return historyId;
     }
 
     public void setHistoryId(Long repairHistoryId) {
         this.historyId = repairHistoryId;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public Long getPartId() {
-        return partId;
-    }
-
-    public void setPartId(Long partId) {
-        this.partId = partId;
     }
 
     @Override
@@ -100,8 +102,6 @@ public class RepairDTO implements Serializable {
             ", price=" + getPrice() +
             ", date='" + getDate() + "'" +
             ", history=" + getHistoryId() +
-            ", task=" + getTaskId() +
-            ", part=" + getPartId() +
             "}";
     }
 }

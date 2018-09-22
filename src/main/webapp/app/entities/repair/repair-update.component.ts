@@ -8,12 +8,12 @@ import { JhiAlertService } from 'ng-jhipster';
 
 import { IRepair } from 'app/shared/model/repair.model';
 import { RepairService } from './repair.service';
-import { IRepairHistory } from 'app/shared/model/repair-history.model';
-import { RepairHistoryService } from 'app/entities/repair-history';
-import { ITask } from 'app/shared/model/task.model';
-import { TaskService } from 'app/entities/task';
 import { IPart } from 'app/shared/model/part.model';
 import { PartService } from 'app/entities/part';
+import { ITask } from 'app/shared/model/task.model';
+import { TaskService } from 'app/entities/task';
+import { IRepairHistory } from 'app/shared/model/repair-history.model';
+import { RepairHistoryService } from 'app/entities/repair-history';
 
 @Component({
     selector: 'jhi-repair-update',
@@ -23,19 +23,19 @@ export class RepairUpdateComponent implements OnInit {
     private _repair: IRepair;
     isSaving: boolean;
 
-    repairhistories: IRepairHistory[];
+    parts: IPart[];
 
     tasks: ITask[];
 
-    parts: IPart[];
+    repairhistories: IRepairHistory[];
     date: string;
 
     constructor(
         private jhiAlertService: JhiAlertService,
         private repairService: RepairService,
-        private repairHistoryService: RepairHistoryService,
-        private taskService: TaskService,
         private partService: PartService,
+        private taskService: TaskService,
+        private repairHistoryService: RepairHistoryService,
         private activatedRoute: ActivatedRoute
     ) {}
 
@@ -44,9 +44,9 @@ export class RepairUpdateComponent implements OnInit {
         this.activatedRoute.data.subscribe(({ repair }) => {
             this.repair = repair;
         });
-        this.repairHistoryService.query().subscribe(
-            (res: HttpResponse<IRepairHistory[]>) => {
-                this.repairhistories = res.body;
+        this.partService.query().subscribe(
+            (res: HttpResponse<IPart[]>) => {
+                this.parts = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -56,9 +56,9 @@ export class RepairUpdateComponent implements OnInit {
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
-        this.partService.query().subscribe(
-            (res: HttpResponse<IPart[]>) => {
-                this.parts = res.body;
+        this.repairHistoryService.query().subscribe(
+            (res: HttpResponse<IRepairHistory[]>) => {
+                this.repairhistories = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
@@ -95,7 +95,7 @@ export class RepairUpdateComponent implements OnInit {
         this.jhiAlertService.error(errorMessage, null, null);
     }
 
-    trackRepairHistoryById(index: number, item: IRepairHistory) {
+    trackPartById(index: number, item: IPart) {
         return item.id;
     }
 
@@ -103,8 +103,19 @@ export class RepairUpdateComponent implements OnInit {
         return item.id;
     }
 
-    trackPartById(index: number, item: IPart) {
+    trackRepairHistoryById(index: number, item: IRepairHistory) {
         return item.id;
+    }
+
+    getSelected(selectedVals: Array<any>, option: any) {
+        if (selectedVals) {
+            for (let i = 0; i < selectedVals.length; i++) {
+                if (option.id === selectedVals[i].id) {
+                    return selectedVals[i];
+                }
+            }
+        }
+        return option;
     }
     get repair() {
         return this._repair;

@@ -13,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 /**
  * Service Implementation for managing Vehicle.
  */
@@ -51,23 +53,32 @@ public class VehicleServiceImpl implements VehicleService {
     /**
      * Get all the vehicles.
      *
-     * @param ownerId
      * @param pageable the pagination information
      * @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<VehicleDTO> findAll(Long ownerId, Pageable pageable) {
-        log.debug("Request to get Vehicles for ownerId={}", ownerId);
-        Page<Vehicle> vehiclePage;
-        if (ownerId != null) {
-            vehiclePage = vehicleRepository.findByOwnerId(ownerId, pageable);
-        } else {
-            vehiclePage = vehicleRepository.findAll(pageable);
-        }
-        return vehiclePage.map(vehicleMapper::toDto);
+    public Page<VehicleDTO> findAll(Pageable pageable) {
+        log.debug("Request to get all Vehicles");
+        return vehicleRepository.findAll(pageable)
+            .map(vehicleMapper::toDto);
     }
 
+
+
+    /**
+     *  get all the vehicles where History is null.
+     *  @return the list of entities
+     */
+    @Transactional(readOnly = true) 
+    public List<VehicleDTO> findAllWhereHistoryIsNull() {
+        log.debug("Request to get all vehicles where History is null");
+        return StreamSupport
+            .stream(vehicleRepository.findAll().spliterator(), false)
+            .filter(vehicle -> vehicle.getHistory() == null)
+            .map(vehicleMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
+    }
 
     /**
      * Get one vehicle by id.
